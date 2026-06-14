@@ -155,35 +155,53 @@
     // 在页面加载时，自动检查 URL 里有没有书签传过来的数据
 window.onload = function() {
     const params = new URLSearchParams(window.location.search);
-    if (params.has('payload')) {
+    const payload = params.get('payload');
+
+    if (payload) {
         try {
-            const jsonStr = decodeURIComponent(escape(atob(params.get('payload'))));
+            // 三重解码：处理 Base64 + URI Component
+            const jsonStr = decodeURIComponent(escape(atob(payload.replace(/ /g, '+'))));
             const data = JSON.parse(jsonStr);
-            
-            // 特殊处理：商誉 + 存货
-            let gw = parseFloat(data['goodwill'] || 0);
-            let inv = parseFloat(data['inventory'] || 0);
+            console.log("Received Data:", data);
+
+            // 特殊处理商誉+存货求和
+            const gw = parseFloat(String(data['goodwill'] || 0).replace(/,/g, '')) || 0;
+            const inv = parseFloat(String(data['inventory'] || 0).replace(/,/g, '')) || 0;
             if (gw > 0 || inv > 0) {
                 document.getElementById('goodwill').value = gw + inv;
             }
 
-            Object.keys(data).forEach(id => {
-                if (id === 'goodwill' || id === 'inventory') return; // 跳过，已处理
-                const el = document.getElementById(id);
-                if (el) {
-                    let val = data[id];
+            // 填充其它字段
+            const fieldMap = {
+                'stockName': 'stockName', 'valuationValue': 'valuationValue',
+                'roe': 'roe', 'payout': 'payout', 'pbValue': 'pbValue',
+                'liabilities': 'liabilities', 'assets': 'assets',
+                'opIncome': 'opIncome', 'netIncome': 'netIncome',
+                'opCashFlow': 'opCashFlow', 'impairment': 'impairment'
+            };
+
+            Object.entries(data).forEach(([key, val]) => {
+                if (key === 'goodwill' || key === 'inventory') return;
+                const inputId = fieldMap[key];
+                const el = document.getElementById(inputId);
+                if (el && val) {
+                    let finalVal = val;
                     if (typeof val === 'string' && val !== "") {
                         let raw = val.toUpperCase();
                         let num = parseFloat(raw.replace(/[^0-9.\-]/g, ''));
                         if (raw.includes('B')) num *= 1000000000;
                         else if (raw.includes('M')) num *= 1000000;
-                        val = isNaN(num) ? val : num;
+                        else if (raw.includes('K') && !raw.includes('KL')) num *= 1000;
+                        finalVal = isNaN(num) ? val : num;
                     }
-                    el.value = val;
+                    el.value = finalVal;
                 }
             });
-            alert("✅ 数据合并成功！");
-        } catch (e) { console.error(e); }
+            alert("✅ 数据已同步！已抓取：" + Object.keys(data).length + " 项指标");
+        } catch (e) {
+            console.error("Payload parse error:", e);
+            alert("❌ 数据解析失败，请检查书签版本是否匹配。");
+        }
     }
     lucide.createIcons();
 };
