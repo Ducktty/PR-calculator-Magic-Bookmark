@@ -152,6 +152,42 @@
 </div>
 
 <script>
+    // 在页面加载时，自动检查 URL 里有没有书签传过来的数据
+window.onload = function() {
+    const params = new URLSearchParams(window.location.search);
+    
+    // 定义映射关系：URL参数名 -> 页面Input ID
+    const fieldMap = {
+        'symbol': 'stockName',
+        'pe': 'valuationValue',
+        'roe': 'roe',
+        'payout': 'payout',
+        'liab': 'liabilities',
+        'assets': 'assets',
+        'opinc': 'opIncome',
+        'netinc': 'netIncome',
+        'gw': 'goodwill',
+        'ocf': 'opCashFlow'
+    };
+
+    let hasData = false;
+    for (let [param, inputId] of Object.entries(fieldMap)) {
+        if (params.has(param)) {
+            let val = params.get(param).replace(/[^0-9.\-]/g, ''); // 只保留数字和小数点
+            document.getElementById(inputId).value = val;
+            hasData = true;
+        }
+    }
+
+    if (hasData) {
+        alert("📊 书签数据已自动同步！");
+        // 自动切换到正确的模式
+        if (params.has('pe')) setMode('PE');
+        if (params.has('pb')) setMode('PB');
+    }
+    
+    lucide.createIcons();
+};
     let currentMode = 'PE';
     let lang = 'en';
     let history = JSON.parse(localStorage.getItem('pr_history') || '[]');
