@@ -24,11 +24,11 @@
 <div id="app" class="max-w-md mx-auto p-4">
     <header class="flex justify-between items-center mb-6 pt-4">
         <div>
-            <h1 class="text-2xl font-bold tracking-tight">市赚率 <span class="text-blue-500 text-sm">PR</span></h1>
-            <p id="lang-sub" class="text-[10px] text-gray-500 uppercase">Market Profit Rate Calculator</p>
+            <h1 class="text-2xl font-bold tracking-tight text-white">市赚率 <span class="text-blue-500 text-sm">PR</span></h1>
+            <p id="lang-sub" class="text-[10px] text-gray-500 uppercase tracking-widest">Market Profit Rate Calculator</p>
         </div>
         <div class="flex gap-2">
-            <button onclick="toggleLang()" id="lang-btn" class="text-[10px] px-2 py-1 border border-gray-600 rounded text-gray-400">EN / 中</button>
+            <button onclick="toggleLang()" id="lang-btn" class="text-[10px] px-2 py-1 border border-gray-700 rounded text-gray-400">EN / 中</button>
             <button onclick="toggleHistory()" class="p-2 glass-card rounded-full"><i data-lucide="history" class="w-4 h-4"></i></button>
         </div>
     </header>
@@ -43,81 +43,106 @@
             <div class="glass-card p-4 rounded-xl space-y-4">
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="label-text" data-zh="股票代码" data-en="Symbol">Symbol</label>
+                        <label class="label-text">Symbol / 代码</label>
                         <input type="text" id="stockName" class="input-field" placeholder="NVDA">
                     </div>
                     <div>
-                        <label class="label-text" id="valuationLabel" data-zh="市盈率 (PE)" data-en="PE Ratio">PE Ratio</label>
+                        <label class="label-text" id="valuationLabel">PE Ratio</label>
                         <input type="number" step="any" id="valuationValue" class="input-field" placeholder="0.00">
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="label-text" data-zh="净资产收益率 (ROE %)" data-en="ROE %">ROE %</label>
+                        <label class="label-text">ROE %</label>
                         <input type="number" step="any" id="roe" class="input-field" placeholder="20.5">
                     </div>
                     <div>
-                        <label class="label-text" data-zh="派息率 (Payout %)" data-en="Payout %">Payout %</label>
+                        <label class="label-text">Payout % / 派息率</label>
                         <input type="number" step="any" id="payout" class="input-field" placeholder="50">
                     </div>
                 </div>
             </div>
 
             <details class="glass-card p-4 rounded-xl">
-                <summary class="text-xs text-gray-400 cursor-pointer font-bold uppercase">Red Flag Metrics (Financials)</summary>
+                <summary class="text-xs text-gray-400 cursor-pointer font-bold uppercase tracking-widest">Red Flag Metrics / 红灯检测</summary>
                 <div class="grid grid-cols-1 gap-4 mt-4">
                     <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="label-text">Total Liabilities</label>
-                            <input type="number" id="liabilities" class="input-field text-xs">
-                        </div>
-                        <div>
-                            <label class="label-text">Total Assets</label>
-                            <input type="number" id="assets" class="input-field text-xs">
-                        </div>
+                        <div><label class="label-text">Total Liabilities</label><input type="number" id="liabilities" class="input-field text-xs"></div>
+                        <div><label class="label-text">Total Assets</label><input type="number" id="assets" class="input-field text-xs"></div>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="label-text">Operating Income</label>
-                            <input type="number" id="opIncome" class="input-field text-xs">
-                        </div>
-                        <div>
-                            <label class="label-text">Net Income</label>
-                            <input type="number" id="netIncome" class="input-field text-xs">
-                        </div>
+                        <div><label class="label-text">Operating Income</label><input type="number" id="opIncome" class="input-field text-xs"></div>
+                        <div><label class="label-text">Net Income</label><input type="number" id="netIncome" class="input-field text-xs"></div>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="label-text">Goodwill + Inv</label>
-                            <input type="number" id="goodwill" class="input-field text-xs">
-                        </div>
-                        <div>
-                            <label class="label-text">Impairment Loss</label>
-                            <input type="number" id="impairment" class="input-field text-xs">
-                        </div>
+                        <div><label class="label-text">Goodwill + Inv</label><input type="number" id="goodwill" class="input-field text-xs"></div>
+                        <div><label class="label-text">Impairment Loss</label><input type="number" id="impairment" class="input-field text-xs"></div>
                     </div>
-                    <div>
-                        <label class="label-text">Operating Cash Flow</label>
-                        <input type="number" id="opCashFlow" class="input-field text-xs">
-                    </div>
-                    <select id="industry" class="input-field text-xs">
-                        <option value="none">Non-Cyclical</option>
-                        <option value="cycle">Cyclical Industry</option>
-                    </select>
+                    <div><label class="label-text">Operating Cash Flow</label><input type="number" id="opCashFlow" class="input-field text-xs"></div>
                 </div>
             </details>
-
-            <button onclick="calculatePR()" class="btn-primary w-full shadow-lg shadow-blue-500/20 uppercase">Run Diagnosis</button>
+            <button onclick="calculatePR()" class="btn-primary w-full shadow-lg shadow-blue-500/20 uppercase tracking-widest py-4">Run Diagnosis / 开始诊断</button>
         </div>
     </div>
 
-    <div id="result-view" class="hidden space-y-6">
-        <div class="glass-card p-6 rounded-2xl text-center">
-            <h2 class="text-gray-500 text-[11px] mb-2 font-bold uppercase tracking-widest">PR Result</h2>
-            <div id="pr-value" class="text-5xl font-bold mb-2">0.00</div>
+    <div id="result-view" class="hidden animate-in fade-in duration-500">
+        <div class="glass-card p-8 rounded-2xl text-center mb-6">
+            <h2 class="text-gray-500 text-[11px] mb-2 font-bold uppercase tracking-widest">PR Result / 市赚率结果</h2>
+            <div id="pr-value" class="text-6xl font-black mb-2">0.00</div>
             <div id="pr-level" class="inline-block px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">---</div>
         </div>
-        <div id="redflags-container" class="space-y-2"></div>
+        <div id="redflags-container" class="space-y-2 mb-6"></div>
         <div class="flex gap-3">
-            <button onclick="saveHistory()" class="btn-primary flex-1 bg-green-600 text-xs">Save</button>
-            <button onclick="resetApp()" class="btn
+            <button onclick="saveHistory()" class="btn-primary flex-1 bg-green-600 text-xs py-4">SAVE RECORD</button>
+            <button onclick="resetApp()" class="btn-primary flex-1 bg-gray-800 text-gray-400 text-xs py-4">BACK</button>
+        </div>
+    </div>
+
+    <div id="history-view" class="hidden">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold">History / 记录</h2>
+            <button onclick="clearAllHistory()" class="text-[10px] text-red-500 font-bold uppercase">Clear All</button>
+        </div>
+        <div id="history-list" class="space-y-3"></div>
+        <button onclick="toggleHistory()" class="w-full mt-8 p-4 text-gray-500 text-xs font-bold uppercase">Close</button>
+    </div>
+</div>
+
+<script>
+let currentMode = 'PE';
+let history = JSON.parse(localStorage.getItem('pr_history') || '[]');
+
+window.onload = function() {
+    const params = new URLSearchParams(window.location.search);
+    const payload = params.get('payload');
+    if (payload) {
+        try {
+            const jsonStr = decodeURIComponent(escape(atob(payload.replace(/ /g, '+'))));
+            const data = JSON.parse(jsonStr);
+            
+            // PB/PE 模式自动切换
+            if (data.pbValue && !data.valuationValue) {
+                setMode('PB');
+                document.getElementById('valuationValue').value = data.pbValue;
+            }
+
+            // 特殊处理商誉+存货
+            const gw = parseFloat(String(data['goodwill'] || 0).replace(/,/g, '')) || 0;
+            const inv = parseFloat(String(data['inventory'] || 0).replace(/,/g, '')) || 0;
+            if (gw > 0 || inv > 0) document.getElementById('goodwill').value = gw + inv;
+
+            const fieldMap = {
+                'stockName': 'stockName', 'valuationValue': 'valuationValue', 'pbValue': 'valuationValue',
+                'roe': 'roe', 'payout': 'payout', 'liabilities': 'liabilities', 
+                'assets': 'assets', 'opIncome': 'opIncome', 'netIncome': 'netIncome',
+                'opCashFlow': 'opCashFlow', 'impairment': 'impairment'
+            };
+
+            Object.entries(data).forEach(([key, val]) => {
+                const inputId = fieldMap[key];
+                const el = document.getElementById(inputId);
+                if (el && key !== 'goodwill' && key !== 'inventory') {
+                    let raw = String(val).toUpperCase();
+                    let n = parseFloat(raw.replace(/[^0-9.\-]/g, ''));
+                    if (raw.includes('B')) n *= 1000000000;
+                    else if (raw.includes('M')) n *= 1000000;
