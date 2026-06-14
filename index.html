@@ -155,33 +155,35 @@
     // 在页面加载时，自动检查 URL 里有没有书签传过来的数据
 window.onload = function() {
     const params = new URLSearchParams(window.location.search);
-    
     if (params.has('payload')) {
         try {
-            /* 对应书签的编码方式进行解码 */
             const jsonStr = decodeURIComponent(escape(atob(params.get('payload'))));
             const data = JSON.parse(jsonStr);
             
+            // 特殊处理：商誉 + 存货
+            let gw = parseFloat(data['goodwill'] || 0);
+            let inv = parseFloat(data['inventory'] || 0);
+            if (gw > 0 || inv > 0) {
+                document.getElementById('goodwill').value = gw + inv;
+            }
+
             Object.keys(data).forEach(id => {
+                if (id === 'goodwill' || id === 'inventory') return; // 跳过，已处理
                 const el = document.getElementById(id);
                 if (el) {
                     let val = data[id];
-                    // 处理数值换算 (B/M/K)
                     if (typeof val === 'string' && val !== "") {
                         let raw = val.toUpperCase();
                         let num = parseFloat(raw.replace(/[^0-9.\-]/g, ''));
                         if (raw.includes('B')) num *= 1000000000;
                         else if (raw.includes('M')) num *= 1000000;
-                        else if (raw.includes('K') && !raw.includes('KL')) num *= 1000;
                         val = isNaN(num) ? val : num;
                     }
                     el.value = val;
                 }
             });
-            alert("✅ 多页数据同步成功！数据项: " + Object.keys(data).length);
-        } catch (e) {
-            console.error("Payload parse error:", e);
-        }
+            alert("✅ 数据合并成功！");
+        } catch (e) { console.error(e); }
     }
     lucide.createIcons();
 };
