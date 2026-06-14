@@ -3,108 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PR Calculator Pro</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0a0a0a">
+    <title>PR Calculator Pro V8</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #0a0a0a; color: #e5e5e5; transition: all 0.3s; }
-        .glass-card { background: rgba(23, 23, 23, 0.8); border: 1px solid #333; }
-        .input-field { background: #171717; border: 1px solid #333; padding: 12px; border-radius: 8px; width: 100%; color: #fff; font-size: 14px; }
-        .input-field:focus { border-color: #3b82f6; outline: none; }
-        .btn-primary { background: #3b82f6; color: white; padding: 12px; border-radius: 8px; font-weight: 600; }
-        .label-text { font-size: 11px; color: #888; margin-bottom: 4px; display: block; font-weight: 600; text-transform: uppercase; }
-        .hidden { display: none; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #050505; color: #e5e5e5; }
+        .glass-card { background: rgba(20, 20, 20, 0.8); border: 1px solid #222; }
+        .input-field { background: #111; border: 1px solid #333; padding: 12px; border-radius: 8px; width: 100%; color: #fff; }
+        .input-field:focus { border-color: #3b82f6; outline: none; box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
+        .btn-primary { background: #3b82f6; color: white; padding: 16px; border-radius: 12px; font-weight: 700; width: 100%; transition: 0.2s; }
+        .btn-primary:active { transform: scale(0.98); }
+        .label-text { font-size: 10px; color: #666; margin-bottom: 4px; display: block; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
     </style>
 </head>
-<body class="pb-20">
+<body class="pb-10">
 
 <div id="app" class="max-w-md mx-auto p-4">
-    <header class="flex justify-between items-center mb-6 pt-4">
-        <div>
-            <h1 class="text-2xl font-bold tracking-tight text-white">市赚率 <span class="text-blue-500 text-sm">PR</span></h1>
-            <p id="lang-sub" class="text-[10px] text-gray-500 uppercase tracking-widest">Market Profit Rate Calculator</p>
-        </div>
-        <div class="flex gap-2">
-            <button onclick="toggleLang()" id="lang-btn" class="text-[10px] px-2 py-1 border border-gray-700 rounded text-gray-400">EN / 中</button>
-            <button onclick="toggleHistory()" class="p-2 glass-card rounded-full"><i data-lucide="history" class="w-4 h-4"></i></button>
-        </div>
+    <header class="flex justify-between items-center py-6">
+        <h1 class="text-2xl font-black italic tracking-tighter text-white">PR CALCULATOR <span class="text-blue-500">v8</span></h1>
+        <button onclick="toggleHistory()" class="p-2 glass-card rounded-full text-gray-400"><i data-lucide="history" class="w-5 h-5"></i></button>
     </header>
 
-    <div id="calculator-view">
-        <div class="flex gap-2 mb-6">
-            <button id="mode-pe" onclick="setMode('PE')" class="flex-1 p-2 rounded-lg text-xs font-bold border border-blue-500 bg-blue-500/10 text-blue-500 uppercase">PE Mode</button>
-            <button id="mode-pb" onclick="setMode('PB')" class="flex-1 p-2 rounded-lg text-xs font-bold border border-gray-700 text-gray-500 uppercase">PB Mode</button>
+    <div id="calculator-view" class="space-y-4">
+        <div class="flex gap-2 p-1 bg-zinc-900 rounded-xl">
+            <button id="mode-pe" onclick="setMode('PE')" class="flex-1 py-2 rounded-lg text-xs font-bold bg-blue-600 text-white">PE MODE</button>
+            <button id="mode-pb" onclick="setMode('PB')" class="flex-1 py-2 rounded-lg text-xs font-bold text-zinc-500">PB MODE</button>
         </div>
 
-        <div class="space-y-4">
-            <div class="glass-card p-4 rounded-xl space-y-4">
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="label-text">Symbol / 代码</label>
-                        <input type="text" id="stockName" class="input-field" placeholder="NVDA">
-                    </div>
-                    <div>
-                        <label class="label-text" id="valuationLabel">PE Ratio</label>
-                        <input type="number" step="any" id="valuationValue" class="input-field" placeholder="0.00">
-                    </div>
+        <div class="glass-card p-5 rounded-2xl space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div><label class="label-text">Ticker</label><input type="text" id="stockName" class="input-field" placeholder="TSLA"></div>
+                <div><label class="label-text" id="vLabel">PE Ratio</label><input type="number" step="any" id="valuationValue" class="input-field" placeholder="372.87"></div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div><label class="label-text">ROE %</label><input type="number" step="any" id="roe" class="input-field" placeholder="4.9"></div>
+                <div><label class="label-text">Payout %</label><input type="number" step="any" id="payout" class="input-field" placeholder="0"></div>
+            </div>
+        </div>
+
+        <details class="glass-card p-4 rounded-2xl" open>
+            <summary class="text-[10px] font-black text-zinc-500 uppercase cursor-pointer mb-2">Red Flag Analysis (Latest TTM)</summary>
+            <div class="grid grid-cols-1 gap-4 pt-2">
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="label-text">Total Liab</label><input type="number" id="liabilities" class="input-field"></div>
+                    <div><label class="label-text">Total Assets</label><input type="number" id="assets" class="input-field"></div>
                 </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="label-text">ROE %</label>
-                        <input type="number" step="any" id="roe" class="input-field" placeholder="20.5">
-                    </div>
-                    <div>
-                        <label class="label-text">Payout % / 派息率</label>
-                        <input type="number" step="any" id="payout" class="input-field" placeholder="50">
-                    </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="label-text">Op Income</label><input type="number" id="opIncome" class="input-field"></div>
+                    <div><label class="label-text">Net Income</label><input type="number" id="netIncome" class="input-field"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="label-text">Goodwill+Inv</label><input type="number" id="goodwill" class="input-field"></div>
+                    <div><label class="label-text">Op Cash Flow</label><input type="number" id="opCashFlow" class="input-field"></div>
                 </div>
             </div>
+        </details>
 
-            <details class="glass-card p-4 rounded-xl">
-                <summary class="text-xs text-gray-400 cursor-pointer font-bold uppercase tracking-widest">Red Flag Metrics / 红灯检测</summary>
-                <div class="grid grid-cols-1 gap-4 mt-4">
-                    <div class="grid grid-cols-2 gap-2">
-                        <div><label class="label-text">Total Liabilities</label><input type="number" id="liabilities" class="input-field text-xs"></div>
-                        <div><label class="label-text">Total Assets</label><input type="number" id="assets" class="input-field text-xs"></div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div><label class="label-text">Operating Income</label><input type="number" id="opIncome" class="input-field text-xs"></div>
-                        <div><label class="label-text">Net Income</label><input type="number" id="netIncome" class="input-field text-xs"></div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div><label class="label-text">Goodwill + Inv</label><input type="number" id="goodwill" class="input-field text-xs"></div>
-                        <div><label class="label-text">Impairment Loss</label><input type="number" id="impairment" class="input-field text-xs"></div>
-                    </div>
-                    <div><label class="label-text">Operating Cash Flow</label><input type="number" id="opCashFlow" class="input-field text-xs"></div>
-                </div>
-            </details>
-            <button onclick="calculatePR()" class="btn-primary w-full shadow-lg shadow-blue-500/20 uppercase tracking-widest py-4">Run Diagnosis / 开始诊断</button>
-        </div>
+        <button onclick="calculatePR()" class="btn-primary shadow-blue-500/20">RUN DIAGNOSIS</button>
     </div>
 
-    <div id="result-view" class="hidden animate-in fade-in duration-500">
-        <div class="glass-card p-8 rounded-2xl text-center mb-6">
-            <h2 class="text-gray-500 text-[11px] mb-2 font-bold uppercase tracking-widest">PR Result / 市赚率结果</h2>
-            <div id="pr-value" class="text-6xl font-black mb-2">0.00</div>
-            <div id="pr-level" class="inline-block px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">---</div>
+    <div id="result-view" class="hidden space-y-6 animate-in slide-in-from-bottom-4 duration-500">
+        <div class="glass-card p-10 rounded-3xl text-center border-t-4 border-t-blue-500">
+            <h2 class="text-zinc-500 text-[10px] font-black uppercase tracking-widest mb-4">Market Profit Rate (PR)</h2>
+            <div id="pr-value" class="text-7xl font-black mb-4">0.00</div>
+            <div id="pr-level" class="inline-block px-6 py-2 rounded-full text-xs font-black uppercase tracking-tighter">---</div>
         </div>
-        <div id="redflags-container" class="space-y-2 mb-6"></div>
+        <div id="redflags-container" class="space-y-2"></div>
         <div class="flex gap-3">
-            <button onclick="saveHistory()" class="btn-primary flex-1 bg-green-600 text-xs py-4">SAVE RECORD</button>
-            <button onclick="resetApp()" class="btn-primary flex-1 bg-gray-800 text-gray-400 text-xs py-4">BACK</button>
+            <button onclick="saveHistory()" class="btn-primary bg-zinc-800 text-white flex-1">SAVE</button>
+            <button onclick="resetApp()" class="btn-primary bg-zinc-900 text-zinc-500 flex-1">BACK</button>
         </div>
     </div>
 
     <div id="history-view" class="hidden">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-bold">History / 记录</h2>
-            <button onclick="clearAllHistory()" class="text-[10px] text-red-500 font-bold uppercase">Clear All</button>
-        </div>
+        <div class="flex justify-between items-center mb-6"><h2 class="text-xl font-black">RECORDS</h2><button onclick="clearAllHistory()" class="text-xs text-red-500 font-bold uppercase">Clear</button></div>
         <div id="history-list" class="space-y-3"></div>
-        <button onclick="toggleHistory()" class="w-full mt-8 p-4 text-gray-500 text-xs font-bold uppercase">Close</button>
+        <button onclick="toggleHistory()" class="w-full mt-6 p-4 text-zinc-600 font-bold text-xs uppercase">Close</button>
     </div>
 </div>
 
@@ -117,32 +92,11 @@ window.onload = function() {
     const payload = params.get('payload');
     if (payload) {
         try {
-            const jsonStr = decodeURIComponent(escape(atob(payload.replace(/ /g, '+'))));
-            const data = JSON.parse(jsonStr);
+            const data = JSON.parse(decodeURIComponent(escape(atob(payload.replace(/ /g, '+')))));
             
-            // PB/PE 模式自动切换
-            if (data.pbValue && !data.valuationValue) {
-                setMode('PB');
-                document.getElementById('valuationValue').value = data.pbValue;
-            }
-
-            // 特殊处理商誉+存货
-            const gw = parseFloat(String(data['goodwill'] || 0).replace(/,/g, '')) || 0;
-            const inv = parseFloat(String(data['inventory'] || 0).replace(/,/g, '')) || 0;
-            if (gw > 0 || inv > 0) document.getElementById('goodwill').value = gw + inv;
-
+            // 处理单位加权：检测到是 Financials 页面传来的数据时，自动补齐千位
+            const multiplyFactor = data._isThousands ? 1000 : 1;
+            
             const fieldMap = {
-                'stockName': 'stockName', 'valuationValue': 'valuationValue', 'pbValue': 'valuationValue',
-                'roe': 'roe', 'payout': 'payout', 'liabilities': 'liabilities', 
-                'assets': 'assets', 'opIncome': 'opIncome', 'netIncome': 'netIncome',
-                'opCashFlow': 'opCashFlow', 'impairment': 'impairment'
-            };
-
-            Object.entries(data).forEach(([key, val]) => {
-                const inputId = fieldMap[key];
-                const el = document.getElementById(inputId);
-                if (el && key !== 'goodwill' && key !== 'inventory') {
-                    let raw = String(val).toUpperCase();
-                    let n = parseFloat(raw.replace(/[^0-9.\-]/g, ''));
-                    if (raw.includes('B')) n *= 1000000000;
-                    else if (raw.includes('M')) n *= 1000000;
+                'stockName': 'stockName', 'pe': 'valuationValue', 'pb': 'valuationValue',
+                'roe': 'roe', 'payout': 'payout', 'liab': 'liabilities',
