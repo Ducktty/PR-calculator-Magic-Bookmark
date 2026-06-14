@@ -156,35 +156,33 @@
 window.onload = function() {
     const params = new URLSearchParams(window.location.search);
     
-    // 处理书签传来的复杂 JSON 数据 (Base64 编码)
     if (params.has('payload')) {
         try {
-            const data = JSON.parse(atob(params.get('payload')));
+            /* 对应书签的编码方式进行解码 */
+            const jsonStr = decodeURIComponent(escape(atob(params.get('payload'))));
+            const data = JSON.parse(jsonStr);
+            
             Object.keys(data).forEach(id => {
                 const el = document.getElementById(id);
                 if (el) {
                     let val = data[id];
-                    // 处理数值换算
-                    if (typeof val === 'string') {
+                    // 处理数值换算 (B/M/K)
+                    if (typeof val === 'string' && val !== "") {
                         let raw = val.toUpperCase();
                         let num = parseFloat(raw.replace(/[^0-9.\-]/g, ''));
                         if (raw.includes('B')) num *= 1000000000;
-                        if (raw.includes('M')) num *= 1000000;
+                        else if (raw.includes('M')) num *= 1000000;
+                        else if (raw.includes('K') && !raw.includes('KL')) num *= 1000;
                         val = isNaN(num) ? val : num;
                     }
                     el.value = val;
                 }
             });
-            alert("✅ 多页数据同步成功！");
-        } catch (e) { console.error("Payload error", e); }
+            alert("✅ 多页数据同步成功！数据项: " + Object.keys(data).length);
+        } catch (e) {
+            console.error("Payload parse error:", e);
+        }
     }
-    
-    // 原有的基础参数处理 (保留兼容性)
-    const fieldMap = { 'symbol': 'stockName', 'pe': 'valuationValue', 'roe': 'roe', 'payout': 'payout' };
-    fieldMap.forEach((inputId, param) => {
-        if (params.has(param)) document.getElementById(inputId).value = params.get(param);
-    });
-
     lucide.createIcons();
 };
     let currentMode = 'PE';
